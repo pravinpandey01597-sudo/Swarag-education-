@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Swarag Education App</title>
+
+<!-- RAZORPAY -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<style>
+/* --- General Styles --- */
+body{
+  margin:0;
+  font-family: 'Poppins', Arial, sans-serif;
+  background:#f3f4f6;
+  color:#1f2937;
+}
+a{
+  text-decoration:none;
+}
+
+/* --- Header --- */
+header{
+  background:linear-gradient(90deg, #1e40af, #2563eb);
+  color:white;
+  padding:20px;
+  text-align:center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+header h1{
+  margin:0;
+  font-size:28px;
+  letter-spacing:1px;
+}
+header p{
+  margin:5px 0 0 0;
+  font-size:14px;
+  opacity:0.9;
+}
+
+/* --- Navigation --- */
+nav{
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  background:#1e3a8a;
+  padding:10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+nav button{
+  border:none;
+  padding:10px 20px;
+  font-weight:bold;
+  border-radius:25px;
+  background:#3b82f6;
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+nav button:hover{
+  background:#60a5fa;
+}
+
+/* --- Section --- */
+section{
+  padding:20px;
+}
+.hidden{ display:none; }
+
+/* --- Class Buttons --- */
+.class-btn{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:15px;
+  margin-bottom:20px;
+}
+.class-btn button{
+  width:120px;
+  padding:12px;
+  background:#2563eb;
+  color:white;
+  border:none;
+  border-radius:12px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+.class-btn button:hover{
+  background:#1d4ed8;
+}
+
+/* --- Chapter Cards --- */
+.chapter{
+  background:white;
+  padding:15px 20px;
+  margin-bottom:15px;
+  border-radius:10px;
+  box-shadow:0 4px 6px rgba(0,0,0,0.05);
+  transition:0.3s;
+}
+.chapter:hover{
+  transform: translateY(-3px);
+  box-shadow:0 6px 10px rgba(0,0,0,0.1);
+}
+.chapter b{
+  font-size:16px;
+}
+.chapter a{
+  margin-right:15px;
+  color:#2563eb;
+  font-weight:500;
+}
+.chapter a:hover{
+  text-decoration:underline;
+}
+
+/* --- Ad Box --- */
+.ad-box{
+  background:#e0e7ff;
+  text-align:center;
+  padding:20px;
+  margin:20px 0;
+  border:2px dashed #93c5fd;
+  border-radius:12px;
+  font-weight:bold;
+  color:#1e40af;
+}
+
+/* --- Premium Button --- */
+.pay-btn{
+  background:#16a34a;
+  color:white;
+  border:none;
+  padding:12px;
+  margin-top:10px;
+  width:100%;
+  font-size:16px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.3s;
+}
+.pay-btn:hover{
+  background:#15803d;
+}
+
+/* --- Footer --- */
+footer{
+  background:#1e293b;
+  color:white;
+  text-align:center;
+  padding:15px;
+  margin-top:20px;
+  font-size:14px;
+  letter-spacing:0.5px;
+}
+
+/* --- Responsive --- */
+@media(max-width:600px){
+  .class-btn{
+    flex-direction:column;
+    align-items:center;
+  }
+  nav{
+    flex-direction:column;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Swarag Education</h1>
+<p>Class 9–12 | UPSC | Paid Courses</p>
+</header>
+
+<nav>
+<button onclick="show('classes')">Classes</button>
+<button onclick="show('upsc')">UPSC</button>
+<button onclick="show('premium')">Premium</button>
+</nav>
+
+<!-- ADS PLACEHOLDER -->
+<div class="ad-box">
+📢 AdMob Banner Ad (Android App me yaha dikhega)
+</div>
+
+<!-- CLASSES -->
+<section id="classes">
+<h2>Select Class</h2>
+<div class="class-btn">
+<button onclick="loadClass(9)">Class 9</button>
+<button onclick="loadClass(10)">Class 10</button>
+<button onclick="loadClass(11)">Class 11</button>
+<button onclick="loadClass(12)">Class 12</button>
+</div>
+<div id="chapters"></div>
+</section>
+
+<!-- UPSC -->
+<section id="upsc" class="hidden">
+<h2>UPSC Current Affairs</h2>
+<div class="chapter">
+<b>Polity:</b> New Election Bill<br>
+<a href="#">Notes</a>
+<a href="https://www.youtube.com" target="_blank">Video</a>
+</div>
+
+<div class="chapter">
+<b>Economy:</b> Union Budget<br>
+<a href="#">Notes</a>
+<a href="https://www.youtube.com" target="_blank">Video</a>
+</div>
+</section>
+
+<!-- PREMIUM -->
+<section id="premium" class="hidden">
+<h2>Premium Courses</h2>
+<div class="chapter">
+<b>Full Class 9–12 Access</b><br>
+₹199 One Time<br>
+<button class="pay-btn" onclick="payNow(199)">Buy Now</button>
+</div>
+
+<div class="chapter">
+<b>UPSC Current Affairs (Monthly)</b><br>
+₹149 / Month<br>
+<button class="pay-btn" onclick="payNow(149)">Subscribe</button>
+</div>
+</section>
+
+<footer>
+© 2026 Swarag Education | Learn • Earn • Grow
+</footer>
+
+<script>
+let paidUser = false;
+
+const syllabus = {
+9:[
+ {name:"Motion", note:"#", video:"https://www.youtube.com"},
+ {name:"Force & Laws", note:"#", video:"https://www.youtube.com"}
+],
+10:[
+ {name:"Chemical Reactions", note:"#", video:"https://www.youtube.com"},
+ {name:"Light", note:"#", video:"https://www.youtube.com"}
+],
+11:[
+ {name:"Kinematics", note:"#", video:"https://www.youtube.com"},
+ {name:"Cell Structure", note:"#", video:"https://www.youtube.com"}
+],
+12:[
+ {name:"Electrostatics", note:"#", video:"https://www.youtube.com"},
+ {name:"Genetics", note:"#", video:"https://www.youtube.com"}
+]
+};
+
+function show(id){
+ ["classes","upsc","premium"].forEach(s=>{
+  document.getElementById(s).classList.add("hidden");
+ });
+ document.getElementById(id).classList.remove("hidden");
+}
+
+function loadClass(cls){
+ let box=document.getElementById("chapters");
+ box.innerHTML=`<h3>Class ${cls} Chapters</h3>`;
+ syllabus[cls].forEach(ch=>{
+  box.innerHTML+=`
+  <div class="chapter">
+   <b>${ch.name}</b><br>
+   <a href="${ch.note}">Notes</a>
+   <a href="${ch.video}" target="_blank">Video</a>
+  </div>`;
+ });
+}
+
+function payNow(amount){
+ var options={
+  key:"rzp_test_xxxxx",
+  amount:amount*100,
+  currency:"INR",
+  name:"Swarag Education",
+  description:"Course Purchase",
+  handler:function(){
+   paidUser=true;
+   alert("Payment Successful! Premium Unlocked");
+  }
+ };
+ var rzp=new Razorpay(options);
+ rzp.open();
+}
+</script>
+
+</body>
+</html>
